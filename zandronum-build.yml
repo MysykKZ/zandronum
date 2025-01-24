@@ -1,0 +1,50 @@
+ame: Build Zandronum Server
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v3
+
+    - name: Install Dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y \
+          build-essential \
+          cmake \
+          libsdl2-dev \
+          libjpeg-dev \
+          libcrypto++-dev \
+          libbz2-dev \
+          libz-dev \
+          libfluidsynth-dev \
+          libgme-dev \
+          libopenal-dev \
+          libsndfile1-dev \
+          libmpg123-dev \
+          libwildmidi-dev \
+          timidity \
+          nasm
+
+    - name: Compile Zandronum
+      run: |
+        mkdir build
+        cd build
+        cmake ..
+        make -j$(nproc)
+
+    - name: Upload Binaries
+      uses: actions/upload-artifact@v3
+      with:
+        name: zandronum-server
+        path: build/zandronum-server
